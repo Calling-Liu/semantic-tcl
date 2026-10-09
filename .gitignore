@@ -125,3 +125,6 @@ demo_out/
 
 # Worktrees
 .worktrees/
+.build-venv/
+.test-output/
+.uv-cache/

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "semantica"
-version = "0.7.0"
+version = "0.7.0+tcl.1"
 description = "Graph-Native Infrastructure for Context and Accountable AI Systems: context graphs, decision intelligence, full provenance tracking, and explainable reasoning engines — every AI decision traceable, every output auditable."
 readme = "README.md"
 license = { text = "MIT" }
@@ -278,6 +278,10 @@ explorer-lite = [
   "streamlit>=1.25.0",
   "streamlit-agraph>=0.0.45"
 ]
+project-kb = [
+  "javalang>=0.13.0",
+  "mcp>=2.3.0,<3"
+]
 
 # Everything (cross-platform — gpu excluded; install semantica[gpu] separately on Linux)
 # NOTE: there is no ``crewai`` extra to include here — see the comment above
@@ -312,6 +316,7 @@ semantica-server = "semantica.server:main"
 semantica-worker = "semantica.worker:main"
 semantica-explorer = "semantica.explorer:main"
 semantica-mcp = "semantica.mcp_server:main"
+semantica-project-kb = "semantica.project_kb.cli:main"
 
 # ---------------- TOOLING ----------------
 [tool.setuptools.packages.find]

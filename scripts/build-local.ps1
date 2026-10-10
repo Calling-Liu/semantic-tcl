@@ -36,7 +36,7 @@ try {
 $runtimeVenv = Join-Path $root ".venv"
 uv venv --clear $runtimeVenv --python $PythonVersion
 $runtimePython = Join-Path $runtimeVenv "Scripts\python.exe"
-$wheel = Get-ChildItem (Join-Path $root "dist\semantica-0.7.0+tcl.1-*.whl") |
+$wheel = Get-ChildItem (Join-Path $root "dist\semantica-0.7.0+tcl.2-*.whl") |
     Sort-Object LastWriteTime -Descending |
     Select-Object -First 1
 if (-not $wheel) {

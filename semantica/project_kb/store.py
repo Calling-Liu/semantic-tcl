@@ -45,6 +45,15 @@ CREATE TABLE IF NOT EXISTS publications(
   snapshot_id TEXT PRIMARY KEY, graph_path TEXT NOT NULL, graph_digest TEXT NOT NULL,
   manifest_path TEXT NOT NULL, published_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS decisions(
+  snapshot_id TEXT NOT NULL, decision_id TEXT NOT NULL, question TEXT NOT NULL,
+  chosen_solution TEXT NOT NULL, rationale TEXT NOT NULL, alternatives_json TEXT NOT NULL,
+  constraints_json TEXT NOT NULL, affected_symbols_json TEXT NOT NULL,
+  review_status TEXT NOT NULL, decision_status TEXT NOT NULL, confidence_score REAL,
+  source_kind TEXT NOT NULL, source_path TEXT NOT NULL, created_by TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY(snapshot_id,decision_id)
+);
 """
 
 
@@ -70,7 +79,10 @@ class Store:
 
     def reset(self, snapshot_id: str) -> None:
         with self.lock:
-            for table in ("relations", "entities", "symbols", "modules", "publications", "snapshots"):
+            for table in (
+                "decisions", "relations", "entities", "symbols",
+                "modules", "publications", "snapshots",
+            ):
                 self.connection.execute(f"DELETE FROM {table} WHERE snapshot_id = ?", (snapshot_id,))
             if self.transaction_depth == 0:
                 self.connection.commit()

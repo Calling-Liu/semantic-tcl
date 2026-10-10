@@ -7,7 +7,7 @@
 - 原项目：https://github.com/semantica-agi/semantica
 - 当前 Fork：https://github.com/Calling-Liu/semantic-tcl
 - 基线 Tag：`v0.7.0`
-- 当前版本：`0.7.0+tcl.1`
+- 当前版本：`0.7.0+tcl.2`
 - License：MIT，保留原项目 License 和历史提交
 
 ## 这个版本增加了什么
@@ -100,7 +100,7 @@ scripts\build-local.ps1 -Proxy "http://127.0.0.1:7897"
 生成产物：
 
 ```text
-D:\project\semantic\dist\semantica-0.7.0+tcl.1-py3-none-any.whl
+D:\project\semantic\dist\semantica-0.7.0+tcl.2-py3-none-any.whl
 ```
 
 ## 3. 手工编译步骤
@@ -139,7 +139,7 @@ uv pip install --python .build-venv\Scripts\python.exe `
 uv venv --clear .venv --python 3.12
 
 uv pip install --python .venv\Scripts\python.exe `
-  "semantica[explorer,project-kb] @ file:///D:/project/semantic/dist/semantica-0.7.0+tcl.1-py3-none-any.whl"
+  "semantica[explorer,project-kb] @ file:///D:/project/semantic/dist/semantica-0.7.0+tcl.2-py3-none-any.whl"
 
 uv pip install --python .venv\Scripts\python.exe pytest
 ```
@@ -156,7 +156,7 @@ uv pip install --python .venv\Scripts\python.exe pytest
 版本应为：
 
 ```text
-0.7.0+tcl.1
+0.7.0+tcl.2
 ```
 
 ## 4. 为项目创建知识库
@@ -207,7 +207,255 @@ D:\knowledge-bases\ai-launcher\
 - `manifest.json` 保存 Snapshot、摘要和图谱统计。
 - `current.json` 指向当前成功发布。
 
-## 5. 查询知识库
+首次构建还会生成：
+
+```text
+D:\knowledge-bases\ai-launcher\project-kb.json
+D:\knowledge-bases\ai-launcher\update-state.json
+```
+
+- `project-kb.json` 保存仓库路径、Revision、根符号和图谱深度。
+- `update-state.json` 保存上一次成功更新的 Commit 和输入摘要。
+
+## 5. 更新知识库
+
+### 5.1 手动更新
+
+代码提交到新的 Commit 后，不需要重新填写 `--repo`、`--roots` 等参数：
+
+```powershell
+D:\project\semantic\.venv\Scripts\semantica-project-kb.exe update `
+  --output D:\knowledge-bases\ai-launcher
+```
+
+更新程序会读取首次构建保存的 `project-kb.json`，检查：
+
+- `--revision` 当前解析到的 Git Commit 是否变化。
+- 项目内正式决策文件是否变化。
+- Agent 决策 inbox 是否变化。
+- 根符号和图谱深度配置是否变化。
+
+如果没有变化，结果为：
+
+```json
+{
+  "status": "skipped",
+  "reason": "Git revision and decision inputs are unchanged"
+}
+```
+
+需要无条件重建时：
+
+```powershell
+D:\project\semantic\.venv\Scripts\semantica-project-kb.exe update `
+  --output D:\knowledge-bases\ai-launcher `
+  --force
+```
+
+知识库只读取 Git Snapshot。工作区修改尚未形成 Commit 时，`HEAD` 不变，代码事实不会更新。
+
+### 5.2 自动监听更新
+
+启动持续监听：
+
+```powershell
+D:\project\semantic\.venv\Scripts\semantica-project-kb.exe watch `
+  --output D:\knowledge-bases\ai-launcher `
+  --interval 5
+```
+
+监听器每 5 秒检查一次：
+
+- Git `HEAD` 或指定 Revision。
+- `.semantica/decisions/` 中已提交的决策。
+- `decision-inbox/` 中 Agent 新生成的候选决策。
+
+检测到变化后自动执行与 `update` 相同的构建和发布流程。
+
+停止监听：
+
+```text
+Ctrl+C
+```
+
+验证一次自动更新但不常驻：
+
+```powershell
+D:\project\semantic\.venv\Scripts\semantica-project-kb.exe watch `
+  --output D:\knowledge-bases\ai-launcher `
+  --once
+```
+
+### 5.3 自动更新的发布安全
+
+- SQLite Snapshot 在事务中构建，抽取失败会回滚。
+- Context Graph 先写临时文件并重新加载验证。
+- 只有全部步骤成功后才更新 `artifacts/current.json` 和 `update-state.json`。
+- 更新失败时，MCP 和 Explorer 可以继续使用上一次成功发布。
+
+### 5.4 使用 Windows 任务计划定时更新
+
+如果不希望保持 `watch` 终端，可以创建定时任务，定期执行：
+
+```powershell
+$exe = "D:\project\semantic\.venv\Scripts\semantica-project-kb.exe"
+$args = "update --output D:\knowledge-bases\ai-launcher"
+
+$action = New-ScheduledTaskAction -Execute $exe -Argument $args
+$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) `
+  -RepetitionInterval (New-TimeSpan -Minutes 5)
+
+Register-ScheduledTask `
+  -TaskName "Update ai-launcher knowledge base" `
+  -Action $action `
+  -Trigger $trigger
+```
+
+删除任务：
+
+```powershell
+Unregister-ScheduledTask -TaskName "Update ai-launcher knowledge base"
+```
+
+## 6. 决策记录与 Agent 自动更新
+
+代码结构可以通过解析器自动确认，但“为什么这样设计”不能让 Agent 无审核地写成事实。因此决策采用两级模型：
+
+```text
+Agent proposal -> pending inbox -> 人工确认 -> 项目 Git 决策记录
+```
+
+### 6.1 初始化项目决策目录
+
+```powershell
+D:\project\semantic\.venv\Scripts\semantica-project-kb.exe decision-template `
+  --repo F:\project\ailauncherNew\temp\ai-launcher
+```
+
+生成：
+
+```text
+F:\project\ailauncherNew\temp\ai-launcher\.semantica\decisions\decision-template.yaml
+```
+
+项目正式决策文件应放在：
+
+```text
+.semantica/decisions/*.yaml
+```
+
+并与代码一起进行 Code Review 和 Git Commit。
+
+### 6.2 手工新增候选决策
+
+```powershell
+D:\project\semantic\.venv\Scripts\semantica-project-kb.exe decision-propose `
+  --output D:\knowledge-bases\ai-launcher `
+  --id bounded-render-worker `
+  --question "渲染任务为什么需要有界队列？" `
+  --solution "使用有界线程池和明确的拒绝策略" `
+  --rationale "无界任务会增加线程、内存和调度压力" `
+  --affected JsthoController LogicExecutor `
+  --alternative "每个任务创建独立线程" `
+  --constraint "不能阻塞主线程"
+```
+
+候选文件保存到：
+
+```text
+D:\knowledge-bases\ai-launcher\decision-inbox\bounded-render-worker.yaml
+```
+
+状态固定为：
+
+```yaml
+review_status: pending
+created_by: agent
+```
+
+如果 `watch` 正在运行，候选决策会自动进入知识库；否则手动执行 `update`。
+
+查询决策：
+
+```powershell
+D:\project\semantic\.venv\Scripts\semantica-project-kb.exe decisions `
+  --output D:\knowledge-bases\ai-launcher
+```
+
+只查询待审核决策：
+
+```powershell
+D:\project\semantic\.venv\Scripts\semantica-project-kb.exe decisions `
+  --output D:\knowledge-bases\ai-launcher `
+  --review-status pending
+```
+
+### 6.3 由 Agent 自动生成候选决策
+
+MCP 默认是只读的。需要允许 Agent 写入候选 inbox 时，注册 MCP 时显式添加：
+
+```powershell
+codex mcp add ai-launcher-kb -- `
+  D:\project\semantic\.venv\Scripts\semantica-project-kb.exe `
+  mcp `
+  --output D:\knowledge-bases\ai-launcher `
+  --allow-decision-proposals
+```
+
+此时新增 MCP 工具：
+
+```text
+propose_decision_candidate
+```
+
+可以对 Agent 说：
+
+```text
+请把这次线程池设计记录成候选决策，状态保持 pending，不要自动确认。
+```
+
+Agent 只会写入 `decision-inbox`。它不能通过该工具把决策标记为 `confirmed`，也不会自动修改项目 Git 历史。
+
+### 6.4 人工确认候选决策
+
+```powershell
+D:\project\semantic\.venv\Scripts\semantica-project-kb.exe decision-accept `
+  --output D:\knowledge-bases\ai-launcher `
+  --repo F:\project\ailauncherNew\temp\ai-launcher `
+  bounded-render-worker
+```
+
+该命令会把候选复制到项目工作树：
+
+```text
+.semantica/decisions/bounded-render-worker.yaml
+```
+
+并将：
+
+```yaml
+review_status: confirmed
+```
+
+接下来仍需人工完成：
+
+```powershell
+cd F:\project\ailauncherNew\temp\ai-launcher
+git diff -- .semantica\decisions\bounded-render-worker.yaml
+git add .semantica\decisions\bounded-render-worker.yaml
+git commit -m "docs(decision): record bounded render worker strategy"
+```
+
+Commit 后，`watch` 或下一次 `update` 会把来源从 `agent_inbox` 升级为 `project_git`。
+
+### 6.5 为什么不允许 Agent 自动确认
+
+- Agent 可能把推断当成历史事实。
+- 决策可能涉及兼容性、性能和产品约束。
+- 正式决策需要责任人和 Code Review。
+- Git 中的决策文件才是长期权威来源；Semantica 图和 SQLite 可以重建。
+
+## 7. 查询知识库
 
 ### 项目摘要
 
@@ -241,7 +489,7 @@ D:\knowledge-bases\ai-launcher\
 
 静态可达不等于设备上的真实运行路径。
 
-## 6. 接入 Codex MCP
+## 8. 接入 Codex MCP
 
 注册知识库：
 
@@ -278,9 +526,12 @@ MCP 工具：
 project_summary
 find_symbol
 analyze_impact
+list_decisions
 ```
 
-## 7. 启动 Explorer
+默认注册方式保持只读。如果希望 Agent 自动生成 `pending` 决策候选，使用第 6.3 节的显式授权参数。
+
+## 9. 启动 Explorer
 
 读取当前 Manifest：
 
@@ -310,7 +561,7 @@ http://127.0.0.1:8765
 
 匿名模式只适合绑定 `127.0.0.1` 的本地开发，不要暴露到局域网或公网。
 
-## 8. TSD 和受保护源码
+## 10. TSD 和受保护源码
 
 项目知识库读取：
 
@@ -327,7 +578,7 @@ Git Commit / Tag / Branch -> Git Object -> 明文解析
 - 需要分析未提交修改时，先提交到临时分支，或指定一个已存在的 Commit。
 - 知识库输出目录中包含符号、关系和源码路径，应按源码安全策略保护。
 
-## 9. ai-launcher 实测结果
+## 11. ai-launcher 实测结果
 
 验证仓库：
 
@@ -371,17 +622,23 @@ LogicExecutor
 - Context Graph 保存和加载正常。
 - stdio MCP 正常。
 - Explorer 正常加载。
+- 无变化 `update` 正确跳过。
+- Agent 候选决策可以写入 inbox。
+- `watch --once` 可以自动将候选决策入库为 `pending`。
+- 显式授权的 MCP 可以调用 `propose_decision_candidate`。
+- Agent 候选测试未修改 `ai-launcher` 业务仓库。
 
-## 10. 当前能力边界
+## 12. 当前能力边界
 
 - Java 使用 Javalang，提供类型、方法和基础静态调用。
 - Kotlin 当前使用确定性声明解析，支持包、类型和方法定位，不承诺完整调用图。
 - 反射、字符串注册、依赖注入和运行时分发可能显示为 `UNRESOLVED`。
-- 当前不自动提取历史架构决策；决策记录应由项目自行评审和维护。
+- 不自动把 Commit 文本推断成已确认历史决策。
+- Agent 可以自动生成 `pending` 候选，但正式决策必须人工确认并进入项目 Git。
 - Explorer 只展示根符号局部图；完整事实保存在 SQLite。
 - 运行时执行路径需要日志、Tracing 或设备证据补充。
 
-## 11. 同步上游
+## 13. 同步上游
 
 ```powershell
 cd D:\project\semantic
@@ -399,7 +656,7 @@ scripts\build-local.ps1
 
 再使用一个真实项目重新构建知识库。
 
-## 12. 开发与发布建议
+## 14. 开发与发布建议
 
 - 功能修改提交到独立分支。
 - Wheel 通过 GitHub Release 发布，不直接提交到 Git。

@@ -72,4 +72,21 @@ class ProjectKnowledgeService:
             "SELECT language, count(*) count FROM symbols WHERE snapshot_id=? GROUP BY language ORDER BY count DESC",
             (snapshot_id,),
         )
+        counts["decisions"] = self.store.query(
+            "SELECT count(*) value FROM decisions WHERE snapshot_id=?", (snapshot_id,)
+        )[0]["value"]
         return {"snapshot": snapshot, "counts": counts, "languages": languages}
+
+    def list_decisions(self, review_status: str | None = None) -> dict[str, Any]:
+        snapshot_id = self.snapshot_id()
+        if review_status:
+            rows = self.store.query(
+                "SELECT * FROM decisions WHERE snapshot_id=? AND review_status=? ORDER BY created_at DESC",
+                (snapshot_id, review_status),
+            )
+        else:
+            rows = self.store.query(
+                "SELECT * FROM decisions WHERE snapshot_id=? ORDER BY created_at DESC",
+                (snapshot_id,),
+            )
+        return {"snapshot_id": snapshot_id, "results": rows}

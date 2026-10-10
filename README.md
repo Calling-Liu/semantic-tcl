@@ -134,6 +134,12 @@ uv pip install --python .build-venv\Scripts\python.exe `
 .build-venv\Scripts\python.exe -m build --wheel --no-isolation
 ```
 
+重复构建前建议删除旧的 Python 构建目录，避免 Wheel 混入历史前端哈希资源：
+
+```powershell
+Remove-Item D:\project\semantic\build -Recurse -Force -ErrorAction SilentlyContinue
+```
+
 ### 3.3 安装本地 Wheel
 
 ```powershell
@@ -566,7 +572,7 @@ http://127.0.0.1:8765
 
 Explorer 默认使用简体中文，左侧底部的语言按钮可以切换到英文。选择会保存在浏览器 `localStorage` 中。
 
-第一批汉化范围：
+已汉化范围：
 
 - 首页和系统状态。
 - 左侧主导航。
@@ -575,6 +581,12 @@ Explorer 默认使用简体中文，左侧底部的语言按钮可以切换到�
 - 图谱效果、邻域、图例和时间上下文面板。
 - 节点 Inspector、内容预览、操作、路径追踪和来源信息。
 - 错误边界与重试提示。
+- Analyze 下的推理和 SPARQL 页面。
+- Decisions 列表、筛选、因果链和空状态。
+- Enrich 下的导入导出、差异合并、实体消歧和 Registry。
+- Manage 下的 PROV-O 溯源、KG Overview 和 Ontology Summary。
+- Ontology Hub 的 Registry、Editor、Versions、Alignments、Health、SHACL 和 Proposal Review。
+- AgentMemory 和 Vocabulary Browser 的操作文案与空状态。
 
 以下工程事实刻意不翻译：
 
@@ -594,6 +606,8 @@ Noto Sans CJK SC
 ```
 
 代码、ID 和关系类型继续使用等宽字体。
+
+后端返回的原始异常详情可能仍为英文。界面固定操作文案使用中文，但不会改写 API 的原始错误内容，便于排查和搜索上游问题。
 
 ## 10. TSD 和受保护源码
 

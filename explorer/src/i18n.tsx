@@ -48,7 +48,6 @@ const ZH_CN: Record<string, string> = {
   "Provenance Dossier": "溯源档案",
   "Discard the unapplied Markdown draft and leave this resource?": "放弃尚未应用的 Markdown 草稿并离开当前资源吗？",
   "Open Semantica Explorer": "打开知识探索",
-  "Run Reasoning": "运行推理",
   "Product category": "产品类别",
   "Navigate knowledge": "让知识网络",
   "like a living system.": "像生命一样可探索。",
@@ -179,7 +178,6 @@ const ZH_CN: Record<string, string> = {
   "Current": "当前",
   "Bounds": "范围",
   "Active nodes": "活跃节点",
-  "All": "全部",
   "Pause Evolution": "暂停时间演化",
   "Play Evolution": "播放时间演化",
   "Temporal Scrubber": "时间轴",
@@ -208,7 +206,6 @@ const ZH_CN: Record<string, string> = {
   "Run link prediction to surface likely next-hop relationships.": "运行关系预测以发现可能的下一跳关系。",
   "Source Attribution": "来源信息",
   "No explicit attribution metadata was found on this node.": "该节点没有明确的来源元数据。",
-  "Properties": "属性",
   "No additional properties are attached to this node.": "该节点没有附加属性。",
   "Preview": "预览",
   "Source": "源码",
@@ -227,6 +224,239 @@ const ZH_CN: Record<string, string> = {
   "Provenance JSON": "溯源 JSON",
   "Provenance MD": "溯源 Markdown",
   "Choose a target or click a candidate prediction to prepare a path trace.": "选择目标节点，或点击候选关系以准备路径追踪。",
+  "Forward Chaining": "正向链式推理",
+  "Inference Engine": "推理引擎",
+  "Quick Templates": "快速模板",
+  "Facts": "事实",
+  "One fact per line using": "每行输入一条事实，格式为",
+  "form.": "形式。",
+  "Rules": "规则",
+  "Use": "使用",
+  "syntax. Falls back to internal matcher if the reasoning server is unavailable.": "语法。如果推理服务不可用，将回退到内置匹配器。",
+  "Write inferred facts to graph": "将推理结果写入图谱",
+  "Inferred binary facts are added as edges": "推导出的二元事实将作为关系写入图谱",
+  "Run Reasoning": "运行推理",
+  "Inference Results": "推理结果",
+  "Ready to reason": "等待推理",
+  "Enter facts and rules on the left, then click Run Reasoning to see inferred statements here.": "在左侧输入事实和规则，然后点击“运行推理”查看结果。",
+  "Reasoning complete": "推理完成",
+  "No new facts were inferred from the current rule set and facts.": "当前规则和事实没有推导出新的事实。",
+  "graph updated": "图谱已更新",
+  "preview only": "仅预览",
+  "Reasoning failed": "推理失败",
+  "Reset to defaults": "恢复默认值",
+  "Run Query": "运行查询",
+  "Run a query": "等待查询",
+  "Write SPARQL above or pick a template, then click Run Query to see results here.": "在上方输入 SPARQL 或选择模板，然后点击“运行查询”查看结果。",
+  "No results": "无结果",
+  "The query returned 0 rows. Try a broader query or check your data.": "查询返回 0 行。请尝试扩大查询范围或检查数据。",
+  "Templates:": "模板：",
+  "Copy query": "复制查询",
+  "Copied!": "已复制！",
+  "Network error — could not reach the SPARQL endpoint.": "网络错误，无法连接 SPARQL 端点。",
+  "Filter by ID, category, outcome…": "按 ID、类别或结果筛选…",
+  "No decisions": "暂无决策",
+  "No matches": "没有匹配项",
+  "No decisions available in the graph.": "图谱中暂无决策记录。",
+  "Adjust your filter.": "请调整筛选条件。",
+  "Decision Record": "决策记录",
+  "Causal Chain": "因果链",
+  "No decision selected": "未选择决策",
+  "Select a decision from the list to inspect its causal chain and metadata.": "从列表中选择决策，以查看其因果链和元数据。",
+  "No chain steps": "没有因果步骤",
+  "No causal chain steps were found for this decision.": "该决策没有找到因果链步骤。",
+  "Agent memories": "Agent 记忆",
+  "Refresh memories": "刷新记忆",
+  "Apply or cancel the current draft before refreshing": "刷新前请先应用或取消当前草稿",
+  "Empty memory": "空记忆",
+  "Load more memories": "加载更多记忆",
+  "Load more": "加载更多",
+  "No AgentMemory items are available.": "暂无 AgentMemory 记录。",
+  "Selected memory": "已选记忆",
+  "Loading memories…": "正在加载记忆…",
+  "Discard the unapplied Markdown draft and open another memory?": "放弃尚未应用的 Markdown 草稿并打开另一条记忆吗？",
+  "Import & Export": "导入与导出",
+  "Ingest new graph datasets or extract the current knowledge base.": "导入新的图谱数据集，或导出当前知识库。",
+  "Import Entities & Relations": "导入实体与关系",
+  "Drag & drop or click to browse": "拖放文件，或点击选择文件",
+  "or": "或",
+  "Upload to Graph": "上传到图谱",
+  "Uploading…": "正在上传…",
+  "Export Graph Snapshot": "导出图谱快照",
+  "Format": "格式",
+  "What's included": "包含内容",
+  "Full graph snapshot: all node properties, edge weights, entity metadata and semantic groups in a standardized JSON payload.": "完整图谱快照：以标准 JSON 格式包含全部节点属性、关系权重、实体元数据和语义分组。",
+  "Flattened CSV: nodes and edges as rows. Complex nested properties are stringified. Best for spreadsheet analysis.": "扁平化 CSV：节点和关系按行输出，复杂嵌套属性转为字符串，适合表格分析。",
+  "Download Export": "下载导出文件",
+  "Preparing…": "正在准备…",
+  "Entity Diff & Merge": "实体差异与合并",
+  "Compare suspected duplicates side-by-side and reconcile them into a single canonical entity.": "并排比较疑似重复实体，并合并为一个标准实体。",
+  "Primary Node ID (keep)": "主节点 ID（保留）",
+  "Duplicate Node ID (remove)": "重复节点 ID（移除）",
+  "Sample preview": "示例预览",
+  "Field": "字段",
+  "Primary (keep)": "主实体（保留）",
+  "Duplicate (remove)": "重复实体（移除）",
+  "Confirm Merge": "确认合并",
+  "Merging…": "正在合并…",
+  "Detect and merge duplicate entities in the knowledge graph": "检测并合并知识图谱中的重复实体",
+  "Similarity Threshold": "相似度阈值",
+  "More results (0.50)": "更多结果（0.50）",
+  "Fewer, higher confidence (0.99)": "更少但置信度更高（0.99）",
+  "Run Dedup Scan": "运行去重扫描",
+  "Scanning…": "正在扫描…",
+  "Clear all": "全部清除",
+  "Merge": "合并",
+  "Dismiss": "忽略",
+  "Document Registry": "文档注册表",
+  "Clear all events": "清除全部事件",
+  "Expand details": "展开详情",
+  "Collapse details": "收起详情",
+  "PROV-O Lineage Viewer": "PROV-O 溯源查看器",
+  "Enter a Node ID in the toolbar above and click Trace to view its W3C PROV-O lineage diagram.": "在上方工具栏输入节点 ID，然后点击“追踪”查看 W3C PROV-O 溯源图。",
+  "Enter Node ID…": "输入节点 ID…",
+  "Trace": "追踪",
+  "Export JSON": "导出 JSON",
+  "Export MD": "导出 Markdown",
+  "Node/edge counts, type distributions, and top connected nodes": "节点与关系数量、类型分布和高连接节点",
+  "Node Type Breakdown": "节点类型分布",
+  "Edge Type Breakdown": "关系类型分布",
+  "Top Connected Nodes (by degree)": "高连接节点（按度数）",
+  "No data — load the graph first.": "暂无数据，请先加载图谱。",
+  "Edge type breakdown requires the stats endpoint to return edge_types.": "关系类型分布需要统计接口返回 edge_types。",
+  "Open Full Browser": "打开完整浏览器",
+  "No vocabulary schemes loaded": "尚未加载词汇体系",
+  "Alternative Labels": "其他标签",
+  "Click a concept in the tree to view its properties.": "点击概念树中的项目以查看属性。",
+  "No concept selected": "未选择概念",
+  "Drop here…": "拖放到此处…",
+  "Import Vocabulary": "导入 Vocabulary",
+  "Import Successful!": "导入成功！",
+  "Editor": "编辑器",
+  "Versions": "版本",
+  "Alignments": "对齐",
+  "Health": "质量",
+  "All": "全部",
+  "Classes": "类",
+  "Concepts": "概念",
+  "Entity Search": "实体搜索",
+  "Search ontologies by name, URI, or namespace…": "按名称、URI 或命名空间搜索 Ontology…",
+  "Loading registry…": "正在加载注册表…",
+  "No ontologies loaded yet": "尚未加载 Ontology",
+  "Import from a URL, upload a file, or create a new ontology to get started. Click": "可以通过 URL、上传文件或新建 Ontology 开始使用。点击",
+  "above.": "即可。",
+  "Load Ontology": "加载 Ontology",
+  "No ontologies match your search": "没有匹配的 Ontology",
+  "Try a different search term or clear the filter.": "请尝试其他搜索词或清除筛选条件。",
+  "Description": "说明",
+  "Properties": "属性",
+  "Loaded at": "加载时间",
+  "Source URL": "来源 URL",
+  "Tags": "标签",
+  "Version": "版本",
+  "Disable": "停用",
+  "Enable": "启用",
+  "Disabled": "已停用",
+  "Re-fetch from source URL": "从来源 URL 重新获取",
+  "Remove from registry": "从注册表移除",
+  "Ontology refreshed": "Ontology 已刷新",
+  "Removed from registry": "已从注册表移除",
+  "From Text": "从文本创建",
+  "From Data": "从数据创建",
+  "From Scratch": "从零创建",
+  "Ontology URL": "Ontology URL",
+  "Format override": "指定格式",
+  "Auto-detect": "自动检测",
+  "Custom display name": "自定义显示名称",
+  "Leave blank to use ontology title": "留空则使用 Ontology 标题",
+  "Display Name *": "显示名称 *",
+  "Namespace URI *": "命名空间 URI *",
+  "Optional description": "可选说明",
+  "Tags (comma-separated)": "标签（逗号分隔）",
+  "Sample Data (JSON or CSV)": "示例数据（JSON 或 CSV）",
+  "Schema Requirements (natural language)": "Schema 要求（自然语言）",
+  "Fetch Preview": "获取预览",
+  "Estimated triples": "预计 triples 数量",
+  "Ontology loaded successfully": "Ontology 加载成功",
+  "Ontology created and opened in the Registry": "Ontology 已创建并在 Registry 中打开",
+  "Versions & Change Proposals": "版本与变更提案",
+  "Ontology URI": "Ontology URI",
+  "Compare Versions": "比较版本",
+  "Compare": "比较",
+  "Comparing...": "正在比较…",
+  "No versions found": "未找到版本",
+  "No proposals found": "未找到提案",
+  "Proposal Details": "提案详情",
+  "Proposal approved": "提案已批准",
+  "Proposal rejected": "提案已拒绝",
+  "Proposal published": "提案已发布",
+  "Cross-ontology mappings": "跨 Ontology 映射",
+  "Mappings": "映射",
+  "Suggestions": "建议",
+  "Pairwise alignment matrix": "成对对齐矩阵",
+  "Recorded alignments": "已记录的对齐",
+  "No alignments recorded yet.": "尚未记录对齐。",
+  "Click a relation badge to load it into the editor below.": "点击关系标签，将其加载到下方编辑器。",
+  "Create or update alignment": "创建或更新对齐",
+  "Source entity URI": "源实体 URI",
+  "Target entity URI": "目标实体 URI",
+  "Relation": "关系",
+  "Provenance note": "溯源说明",
+  "Reviewer": "审核人",
+  "Source ontology": "源 Ontology",
+  "Target ontology": "目标 Ontology",
+  "Any ontology": "任意 Ontology",
+  "Suggest alignments": "生成对齐建议",
+  "Run suggestions to review ranked candidate mappings.": "运行建议以查看排序后的候选映射。",
+  "Remove alignment": "移除对齐",
+  "Quality and governance signals": "质量与治理指标",
+  "Ontology": "Ontology",
+  "Total health score": "总体质量评分",
+  "Actionable issues": "可处理问题",
+  "No actionable issues reported for this ontology.": "该 Ontology 没有报告可处理问题。",
+  "Select an ontology to compute health signals.": "选择 Ontology 以计算质量指标。",
+  "Generate, edit, and validate shapes": "生成、编辑并验证 Shapes",
+  "Generate or edit SHACL Turtle, then run validation.": "生成或编辑 SHACL Turtle，然后运行验证。",
+  "Shape library": "Shape 库",
+  "No shapes generated yet.": "尚未生成 Shapes。",
+  "Turtle shape editor": "Turtle Shape 编辑器",
+  "Validation report": "验证报告",
+  "No validation violations returned.": "没有返回验证违规项。",
+  "View all": "查看全部",
+  "Click to load this shape into the editor": "点击将该 Shape 加载到编辑器",
+  "Loading proposal...": "正在加载提案…",
+  "No changes detected": "未检测到变更",
+  "No comments yet": "暂无评论",
+  "Add a comment...": "添加评论…",
+  "Active ontology": "当前 Ontology",
+  "Select ontology...": "选择 Ontology…",
+  "Loading ontology structure…": "正在加载 Ontology 结构…",
+  "This ontology has no editable classes or properties.": "该 Ontology 没有可编辑的类或属性。",
+  "Ontology Details": "Ontology 详情",
+  "Class Details": "类详情",
+  "Property Details": "属性详情",
+  "Relationship Details": "关系详情",
+  "External Term Details": "外部术语详情",
+  "Visual editor changes": "可视化编辑器变更",
+  "Saving...": "正在保存…",
+  "Propose": "提交提案",
+  "Search classes, properties, concepts…": "搜索类、属性或概念…",
+  "Not found": "未找到",
+  "Definition": "定义",
+  "Domain": "Domain",
+  "Range": "Range",
+  "Instances": "实例",
+  "Source Ontology": "来源 Ontology",
+  "Superclasses / Broader": "父类 / Broader",
+  "Subclasses / Narrower": "子类 / Narrower",
+  "Concept Scheme": "Concept Scheme",
+  "Search labels and definitions…": "搜索标签和定义…",
+  "No matching concepts": "没有匹配的概念",
+  "No concepts in this scheme": "该 Scheme 中没有概念",
+  "Loading concepts…": "正在加载概念…",
+  "Concept Detail": "概念详情",
+  "Editorial Note": "编辑说明",
+  "Scope Note": "范围说明",
   "Preparing graph session": "正在准备图谱会话",
   "Loading nodes": "正在加载节点",
   "Loading relationships": "正在加载关系",
@@ -275,6 +505,100 @@ const I18nContext = createContext<I18nContextValue>({
   tr: (source) => source,
 });
 
+const ENGLISH_BY_CHINESE = new Map(
+  Object.entries(ZH_CN).map(([english, chinese]) => [chinese, english]),
+);
+const ORIGINAL_TEXT = new WeakMap<Text, string>();
+const ORIGINAL_ATTRIBUTES = new WeakMap<Element, Map<string, string>>();
+const TRANSLATABLE_ATTRIBUTES = ["placeholder", "title", "aria-label"] as const;
+const AUTO_TRANSLATE_EXCLUDE = [
+  "code",
+  "pre",
+  "canvas",
+  "script",
+  "style",
+  "[data-i18n='off']",
+  ".mono",
+  ".explore-color-legend-name",
+  ".explore-search-suggestion-type",
+].join(",");
+
+function isExcluded(element: Element | null) {
+  return Boolean(element?.closest(AUTO_TRANSLATE_EXCLUDE));
+}
+
+function translateTextNode(node: Text, locale: Locale) {
+  if (isExcluded(node.parentElement)) return;
+  const current = node.nodeValue ?? "";
+  let original = ORIGINAL_TEXT.get(node);
+  if (original == null) {
+    const trimmed = current.trim();
+    const reverse = ENGLISH_BY_CHINESE.get(trimmed);
+    const translated = translate(trimmed, "zh-CN");
+    if (reverse) {
+      const leading = current.slice(0, current.indexOf(trimmed));
+      const trailing = current.slice(current.indexOf(trimmed) + trimmed.length);
+      original = `${leading}${reverse}${trailing}`;
+    } else if (translated !== trimmed) {
+      original = current;
+    } else {
+      return;
+    }
+    ORIGINAL_TEXT.set(node, original);
+  }
+  if (locale === "en-US") {
+    if (current !== original) node.nodeValue = original;
+    return;
+  }
+  const trimmed = original.trim();
+  if (!trimmed) return;
+  const translated = translate(trimmed, "zh-CN");
+  if (translated === trimmed) return;
+  const leading = original.slice(0, original.indexOf(trimmed));
+  const trailing = original.slice(original.indexOf(trimmed) + trimmed.length);
+  const next = `${leading}${translated}${trailing}`;
+  if (current !== next) node.nodeValue = next;
+}
+
+function translateAttributes(element: Element, locale: Locale) {
+  if (isExcluded(element)) return;
+  let originals = ORIGINAL_ATTRIBUTES.get(element);
+  if (!originals) {
+    originals = new Map<string, string>();
+    ORIGINAL_ATTRIBUTES.set(element, originals);
+  }
+  for (const attribute of TRANSLATABLE_ATTRIBUTES) {
+    const current = element.getAttribute(attribute);
+    if (current == null) continue;
+    if (!originals.has(attribute)) {
+      const reverse = ENGLISH_BY_CHINESE.get(current);
+      const translated = translate(current, "zh-CN");
+      if (reverse) originals.set(attribute, reverse);
+      else if (translated !== current) originals.set(attribute, current);
+      else continue;
+    }
+    const original = originals.get(attribute) ?? current;
+    const next = locale === "zh-CN" ? translate(original, "zh-CN") : original;
+    if (current !== next) element.setAttribute(attribute, next);
+  }
+}
+
+function translateSubtree(root: Node, locale: Locale) {
+  if (root.nodeType === Node.TEXT_NODE) {
+    translateTextNode(root as Text, locale);
+    return;
+  }
+  if (!(root instanceof Element)) return;
+  translateAttributes(root, locale);
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+  let current = walker.nextNode();
+  while (current) {
+    if (current.nodeType === Node.TEXT_NODE) translateTextNode(current as Text, locale);
+    else translateAttributes(current as Element, locale);
+    current = walker.nextNode();
+  }
+}
+
 export function translate(source: string, locale?: Locale) {
   const resolvedLocale = locale ?? (
     typeof window === "undefined"
@@ -308,6 +632,26 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     window.localStorage.setItem("semantica-locale", locale);
     document.documentElement.lang = locale;
+    translateSubtree(document.body, locale);
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === "characterData") {
+          translateTextNode(mutation.target as Text, locale);
+        } else if (mutation.type === "attributes") {
+          translateAttributes(mutation.target as Element, locale);
+        } else {
+          mutation.addedNodes.forEach((node) => translateSubtree(node, locale));
+        }
+      }
+    });
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: [...TRANSLATABLE_ATTRIBUTES],
+    });
+    return () => observer.disconnect();
   }, [locale]);
 
   const value = useMemo<I18nContextValue>(() => ({

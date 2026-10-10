@@ -28,6 +28,10 @@ if (-not (Test-Path -LiteralPath $buildPython)) {
 
 Push-Location $root
 try {
+    $buildDir = Join-Path $root "build"
+    if (Test-Path -LiteralPath $buildDir) {
+        Remove-Item -LiteralPath $buildDir -Recurse -Force
+    }
     & $buildPython -m build --wheel --no-isolation
 } finally {
     Pop-Location

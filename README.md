@@ -7,7 +7,7 @@
 - 原项目：https://github.com/semantica-agi/semantica
 - 当前 Fork：https://github.com/Calling-Liu/semantic-tcl
 - 基线 Tag：`v0.7.0`
-- 当前版本：`0.7.0+tcl.3`
+- 当前版本：`0.7.0+tcl.5`
 - License：MIT，保留原项目 License 和历史提交
 
 ## 这个版本增加了什么
@@ -33,6 +33,12 @@
 ```text
 semantica-project-kb
 ```
+
+## 文档导航
+
+- [Explorer 前端六大 Tab 使用指南](docs/explorer-ui-guide.zh-CN.md)：说明知识探索、分析、决策、知识加工、管理和本体中心，以及每个子页面的用途、使用方式和限制。
+- [官方架构说明](docs/architecture.md)：了解 Semantica 的核心模块和分层结构。
+- [Explorer 启动说明](docs/explorer-setup.md)：了解 Explorer 的标准启动参数和接口。
 
 ## 环境要求
 
@@ -101,7 +107,7 @@ scripts\build-local.ps1 -Proxy "http://127.0.0.1:7897"
 生成产物：
 
 ```text
-D:\project\semantic\dist\semantica-0.7.0+tcl.3-py3-none-any.whl
+D:\project\semantic\dist\semantica-0.7.0+tcl.5-py3-none-any.whl
 ```
 
 ## 3. 手工编译步骤
@@ -146,7 +152,7 @@ Remove-Item D:\project\semantic\build -Recurse -Force -ErrorAction SilentlyConti
 uv venv --clear .venv --python 3.12
 
 uv pip install --python .venv\Scripts\python.exe `
-  "semantica[explorer,project-kb] @ file:///D:/project/semantic/dist/semantica-0.7.0+tcl.3-py3-none-any.whl"
+  "semantica[explorer,project-kb] @ file:///D:/project/semantic/dist/semantica-0.7.0+tcl.5-py3-none-any.whl"
 
 uv pip install --python .venv\Scripts\python.exe pytest
 ```
@@ -163,7 +169,7 @@ uv pip install --python .venv\Scripts\python.exe pytest
 版本应为：
 
 ```text
-0.7.0+tcl.3
+0.7.0+tcl.5
 ```
 
 ## 4. 为项目创建知识库

@@ -28,6 +28,22 @@ interface ChainStep {
   [key: string]: unknown;
 }
 
+interface DecisionRecord {
+  decision_id: string;
+  category?: string;
+  scenario?: string;
+  reasoning?: string;
+  outcome?: string;
+  confidence?: number;
+  timestamp?: string | null;
+  metadata?: Record<string, unknown>;
+}
+
+function metadataText(decision: DecisionRecord, key: string) {
+  const value = decision.metadata?.[key];
+  return typeof value === "string" ? value : "";
+}
+
 const NODE_ACCENTS = ["#4aa3ff","#4cc38a","#f2b66d","#c084fc","#ff7b72","#38bdf8","#a78bfa"];
 
 function ChainNode({ step, index }: { step: ChainStep; index: number }) {
@@ -86,8 +102,8 @@ function CausalFlow({ chain, loading }: { chain: ChainStep[]; loading: boolean }
 }
 
 export function DecisionWorkspace() {
-  const [decisions, setDecisions] = useState<{ decision_id: string; category?: string; outcome?: string }[]>([]);
-  const [selected, setSelected] = useState<{ decision_id: string; category?: string; outcome?: string } | null>(null);
+  const [decisions, setDecisions] = useState<DecisionRecord[]>([]);
+  const [selected, setSelected] = useState<DecisionRecord | null>(null);
   const [chain, setChain] = useState<ChainStep[]>([]);
   const [chainLoading, setChainLoading] = useState(false);
   const [listLoading, setListLoading] = useState(true);
@@ -128,7 +144,7 @@ export function DecisionWorkspace() {
   // Cancel any in-flight chain request when the workspace unmounts.
   useEffect(() => () => { chainCtrlRef.current?.abort(); }, []);
 
-  async function loadChain(d: { decision_id: string; category?: string; outcome?: string }) {
+  async function loadChain(d: DecisionRecord) {
     chainCtrlRef.current?.abort();
     const ctrl = new AbortController();
     chainCtrlRef.current = ctrl;
@@ -160,6 +176,8 @@ export function DecisionWorkspace() {
     return decisions.filter((d) =>
       d.decision_id.toLowerCase().includes(q) ||
       (d.category ?? "").toLowerCase().includes(q) ||
+      (d.scenario ?? "").toLowerCase().includes(q) ||
+      (d.reasoning ?? "").toLowerCase().includes(q) ||
       (d.outcome ?? "").toLowerCase().includes(q)
     );
   }, [decisions, filter]);
@@ -183,7 +201,7 @@ export function DecisionWorkspace() {
             <input
               className="ws-input"
               type="text"
-              placeholder="Filter by ID, category, outcome…"
+              placeholder="搜索决策、分类或结论…"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               style={{ paddingLeft: 30, fontSize: 12 }}
@@ -211,12 +229,17 @@ export function DecisionWorkspace() {
                     className={`ws-list-item${active ? " ws-list-item--active" : ""}`}
                     onClick={() => void loadChain(d)}
                   >
-                    <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 5, color: active ? "#e8f6ff" : "var(--ws-text)" }}>
-                      {d.decision_id}
+                    <div style={{ fontWeight: 700, fontSize: 12, marginBottom: 5, color: active ? "#e8f6ff" : "var(--ws-text)", lineHeight: 1.5 }}>
+                      {d.scenario || d.outcome || d.decision_id}
                     </div>
+                    {(d.scenario || d.outcome) && (
+                      <div style={{ fontFamily: "monospace", fontSize: 9, color: "var(--ws-text-dim)", marginBottom: 5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {d.decision_id}
+                      </div>
+                    )}
                     <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
                       {d.category && <span style={{ fontSize: 10, color: "var(--ws-text-dim)" }}>{d.category}</span>}
-                      {d.outcome && <OutcomeBadge outcome={d.outcome} />}
+                      {metadataText(d, "decision_status") && <OutcomeBadge outcome={metadataText(d, "decision_status")} />}
                     </div>
                   </button>
                 );
@@ -243,12 +266,36 @@ export function DecisionWorkspace() {
               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
                 <div>
                   <div className="ws-eyebrow" style={{ marginBottom: 6 }}>Decision Record</div>
-                  <h2 className="ws-title">{selected.decision_id}</h2>
+                  <h2 className="ws-title">{selected.scenario || selected.decision_id}</h2>
+                  {selected.scenario && (
+                    <div style={{ fontFamily: "monospace", fontSize: 10, color: "var(--ws-text-dim)", marginTop: 7, wordBreak: "break-all" }}>
+                      {selected.decision_id}
+                    </div>
+                  )}
                 </div>
-                {selected.outcome && <OutcomeBadge outcome={selected.outcome} />}
+                {metadataText(selected, "decision_status") && <OutcomeBadge outcome={metadataText(selected, "decision_status")} />}
               </div>
-              {selected.category && (
-                <span className="ws-pill ws-pill--mono">{selected.category}</span>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {selected.category && <span className="ws-pill ws-pill--mono">{selected.category}</span>}
+                {metadataText(selected, "review_status") && <span className="ws-pill ws-pill--green">{metadataText(selected, "review_status")}</span>}
+                {typeof selected.confidence === "number" && selected.confidence > 0 && (
+                  <span className="ws-pill ws-pill--accent">confidence {selected.confidence.toFixed(2)}</span>
+                )}
+              </div>
+            </div>
+
+            <div className="ws-card" style={{ padding: 22, marginBottom: 16 }}>
+              <div className="ws-eyebrow" style={{ marginBottom: 8 }}>Chosen Solution</div>
+              <div style={{ color: "var(--ws-text)", fontSize: 14, lineHeight: 1.7, marginBottom: selected.reasoning ? 20 : 0 }}>
+                {selected.outcome || "No chosen solution recorded."}
+              </div>
+              {selected.reasoning && (
+                <>
+                  <div className="ws-eyebrow" style={{ marginBottom: 8 }}>Rationale</div>
+                  <div style={{ color: "var(--ws-text-muted)", fontSize: 13, lineHeight: 1.75 }}>
+                    {selected.reasoning}
+                  </div>
+                </>
               )}
             </div>
 

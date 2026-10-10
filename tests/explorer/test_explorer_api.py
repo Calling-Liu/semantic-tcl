@@ -431,6 +431,27 @@ class TestDecisions:
         assert len(payload) >= 2
         assert all("decision_id" in item for item in payload)
 
+    def test_list_architecture_decisions_with_project_kb_fields(self, client):
+        client.app.state.session.add_node(
+            "decision:render-worker",
+            "architecture_decision",
+            content="Use a bounded render worker.",
+            question="How should render work be scheduled?",
+            rationale="An unbounded executor can exhaust memory.",
+            confidence_score=0.91,
+            review_status="confirmed",
+        )
+
+        response = client.get("/api/decisions?category=architecture")
+
+        assert response.status_code == 200
+        payload = response.json()
+        decision = next(item for item in payload if item["decision_id"] == "decision:render-worker")
+        assert decision["scenario"] == "How should render work be scheduled?"
+        assert decision["reasoning"] == "An unbounded executor can exhaust memory."
+        assert decision["outcome"] == "Use a bounded render worker."
+        assert decision["confidence"] == 0.91
+
     def test_get_decision(self, client):
         response = client.get("/api/decisions/decision_1")
         assert response.status_code == 200

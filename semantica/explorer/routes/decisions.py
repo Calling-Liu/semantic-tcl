@@ -13,17 +13,46 @@ from ..session import GraphSession
 
 router = APIRouter(prefix="/api/decisions", tags=["Decisions"])
 
+_DECISION_NODE_TYPES = ("decision", "architecture_decision")
+
+
+def _decision_nodes(session: GraphSession) -> list[dict]:
+    decisions: list[dict] = []
+    seen_ids: set[str] = set()
+    for node_type in _DECISION_NODE_TYPES:
+        nodes, _ = session.get_nodes(node_type=node_type, skip=0, limit=999_999)
+        for node in nodes:
+            decision_id = str(node.get("id", ""))
+            if decision_id in seen_ids:
+                continue
+            seen_ids.add(decision_id)
+            decisions.append(node)
+    decisions.sort(key=lambda node: str(node.get("id", "")))
+    return decisions
+
 
 def _node_to_decision(node: dict) -> DecisionResponse:
     properties = node.get("properties", {})
+    is_architecture_decision = node.get("type") == "architecture_decision"
     return DecisionResponse(
         decision_id=node.get("id", ""),
-        category=properties.get("category", ""),
-        scenario=properties.get("scenario", ""),
-        reasoning=properties.get("reasoning", ""),
-        outcome=properties.get("outcome", ""),
-        confidence=float(properties.get("confidence", 0.0) or 0.0),
-        timestamp=properties.get("timestamp"),
+        category=properties.get("category") or ("architecture" if is_architecture_decision else ""),
+        scenario=properties.get("scenario") or properties.get("question", ""),
+        reasoning=properties.get("reasoning") or properties.get("rationale", ""),
+        outcome=(
+            properties.get("outcome")
+            or properties.get("chosen_solution")
+            or properties.get("content")
+            or node.get("content", "")
+        ),
+        confidence=float(
+            properties.get("confidence", properties.get("confidence_score", 0.0)) or 0.0
+        ),
+        timestamp=(
+            properties.get("timestamp")
+            or properties.get("decided_at")
+            or properties.get("created_at")
+        ),
         metadata=properties,
     )
 
@@ -35,21 +64,17 @@ async def list_decisions(
     limit: int = Query(50, ge=1, le=500),
     session: GraphSession = Depends(get_session),
 ):
-    nodes, _ = await asyncio.to_thread(
-        session.get_nodes,
-        node_type="decision",
-        skip=0,
-        limit=999_999,
-    )
+    nodes = await asyncio.to_thread(_decision_nodes, session)
+    decisions = [_node_to_decision(node) for node in nodes]
 
     if category:
-        nodes = [
-            node
-            for node in nodes
-            if str(node.get("properties", {}).get("category", "")).lower() == category.lower()
+        decisions = [
+            decision
+            for decision in decisions
+            if decision.category.lower() == category.lower()
         ]
 
-    return [_node_to_decision(node) for node in nodes[skip : skip + limit]]
+    return decisions[skip : skip + limit]
 
 
 @router.get("/causal-distance", response_model=CausalDistanceReport)
@@ -75,7 +100,7 @@ async def get_decision(
     session: GraphSession = Depends(get_session),
 ):
     node = await asyncio.to_thread(session.get_node, decision_id)
-    if node is None:
+    if node is None or node.get("type") not in _DECISION_NODE_TYPES:
         raise HTTPException(status_code=404, detail=f"Decision '{decision_id}' not found")
     return _node_to_decision(node)
 
@@ -113,26 +138,21 @@ async def get_precedents(
     if node is None:
         raise HTTPException(status_code=404, detail=f"Decision '{decision_id}' not found")
 
-    properties = node.get("properties", {})
-    category = str(properties.get("category", ""))
-    scenario_words = set(str(properties.get("scenario", "")).lower().split())
+    current = _node_to_decision(node)
+    category = current.category
+    scenario_words = set(current.scenario.lower().split())
 
-    all_decisions, _ = await asyncio.to_thread(
-        session.get_nodes,
-        node_type="decision",
-        skip=0,
-        limit=999_999,
-    )
+    all_decisions = await asyncio.to_thread(_decision_nodes, session)
 
     scored = []
     for decision in all_decisions:
         if decision.get("id") == decision_id:
             continue
-        other_props = decision.get("properties", {})
+        other = _node_to_decision(decision)
         score = 0.0
-        if category and str(other_props.get("category", "")).lower() == category.lower():
+        if category and other.category.lower() == category.lower():
             score += 0.5
-        other_words = set(str(other_props.get("scenario", "")).lower().split())
+        other_words = set(other.scenario.lower().split())
         if scenario_words and other_words:
             overlap = len(scenario_words & other_words) / max(len(scenario_words | other_words), 1)
             score += 0.5 * overlap

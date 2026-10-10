@@ -79,7 +79,7 @@ test("visible legend follows loaded data, reloads, focused views, and distance m
     await route.fulfill({ json });
   });
   await page.goto(BASE_URL);
-  await page.getByRole("button", { name: "Open Semantica Explorer" }).click();
+  await page.getByRole("button", { name: /打开知识探索|Open Semantica Explorer/ }).click();
   const legend = page.getByRole("group", { name: "Node colors" });
   await legend.waitFor();
   await page.locator("canvas").first().waitFor({ state: "visible" });
@@ -88,7 +88,7 @@ test("visible legend follows loaded data, reloads, focused views, and distance m
   assert.equal(await legend.getByText("Biomolecule", { exact: true }).count(), 0);
 
   nodes = initialNodes.map((node) => ({ ...node, type: node.type === "Person" ? "Researcher" : node.type }));
-  await page.getByRole("button", { name: "Reload graph data" }).click();
+  await page.getByRole("button", { name: /重新加载图谱数据|Reload graph data/ }).click();
   await legend.getByText("Researcher", { exact: true }).waitFor();
   assert.equal(await legend.getByText("Person", { exact: true }).count(), 0);
   await assertLegendMatchesGraph(page);

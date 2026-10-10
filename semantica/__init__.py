@@ -10,7 +10,7 @@ Main exports:
     - Config: Configuration management
 """
 
-__version__ = "0.7.0+tcl.2"
+__version__ = "0.7.0+tcl.3"
 __author__ = "Semantica Contributors"
 __license__ = "MIT"
 

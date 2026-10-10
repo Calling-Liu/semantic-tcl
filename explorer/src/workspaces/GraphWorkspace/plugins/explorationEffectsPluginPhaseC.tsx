@@ -8,6 +8,7 @@ import type {
   GraphEffectToggle,
 } from "../types";
 import type { GraphPlugin } from "./types";
+import { translate, useI18n } from "../../../i18n";
 
 const EFFECTS_PANEL_ID = "effects-panel";
 
@@ -135,15 +136,16 @@ function EffectToggleRow({
   availability: GraphEffectAvailability;
   onToggle: () => void;
 }) {
+  const { tr } = useI18n();
   return (
     <div style={toggleRowStyle}>
       <div style={{ minWidth: 0, flex: 1 }}>
-        <div style={rowTitleStyle}>{label}</div>
-        <div style={rowDescriptionStyle}>{description}</div>
+        <div style={rowTitleStyle}>{tr(label)}</div>
+        <div style={rowDescriptionStyle}>{tr(description)}</div>
         <div style={rowMetaStyle}>{renderAvailabilityText(availability)}</div>
       </div>
       <button type="button" onClick={onToggle} style={checked ? toggleButtonActiveStyle : toggleButtonStyle}>
-        {checked ? "On" : "Off"}
+        {tr(checked ? "On" : "Off")}
       </button>
     </div>
   );
@@ -272,8 +274,8 @@ export const explorationEffectsPluginPhaseC: GraphPlugin = {
   toolbarItems: (context) => [
     {
       id: "effects-toggle",
-      label: "Effects",
-      title: "Open exploration effects controls",
+      label: translate("Effects"),
+      title: translate("Open exploration effects controls"),
       active: context.isPanelOpen(EFFECTS_PANEL_ID),
       order: 18,
       onClick: () => context.dispatchAction({ type: "togglePanel", panelId: EFFECTS_PANEL_ID }),
@@ -297,7 +299,7 @@ export const explorationEffectsPluginPhaseC: GraphPlugin = {
 
     return {
       id: EFFECTS_PANEL_ID,
-      title: "Effects",
+      title: translate("Effects"),
       placement: "bottom",
       order: 8,
       defaultOpen: false,

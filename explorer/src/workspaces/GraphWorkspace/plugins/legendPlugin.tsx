@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 
 import { buildGraphColorLegend } from "../graphColorLegend";
 import type { GraphPlugin } from "./types";
+import { translate } from "../../../i18n";
 
 const LEGEND_PANEL_ID = "legend-panel";
 const MAX_GROUPS = 8;
@@ -14,8 +15,8 @@ export const legendPlugin: GraphPlugin = {
   toolbarItems: (context) => [
     {
       id: "legend-toggle",
-      label: "Legend",
-      title: "Toggle semantic legend",
+      label: translate("Legend"),
+      title: translate("Toggle semantic legend"),
       active: context.isPanelOpen(LEGEND_PANEL_ID),
       order: 20,
       onClick: () => context.dispatchAction({ type: "togglePanel", panelId: LEGEND_PANEL_ID }),
@@ -32,7 +33,7 @@ export const legendPlugin: GraphPlugin = {
 
     return {
       id: LEGEND_PANEL_ID,
-      title: "Legend",
+      title: translate("Legend"),
       placement: "bottom",
       order: 10,
       defaultOpen: false,

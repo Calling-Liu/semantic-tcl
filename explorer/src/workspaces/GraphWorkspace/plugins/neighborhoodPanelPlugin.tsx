@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 
 import type { GraphPlugin } from "./types";
+import { translate } from "../../../i18n";
 
 const NEIGHBORHOOD_PANEL_ID = "neighborhood-panel";
 const MAX_NEIGHBORS = 10;
@@ -29,8 +30,8 @@ export const neighborhoodPanelPlugin: GraphPlugin = {
   toolbarItems: (context) => [
     {
       id: "neighborhood-toggle",
-      label: "Neighbors",
-      title: "Toggle neighborhood panel",
+      label: translate("Neighbors"),
+      title: translate("Toggle neighborhood panel"),
       active: context.isPanelOpen(NEIGHBORHOOD_PANEL_ID),
       order: 30,
       onClick: () => context.dispatchAction({ type: "togglePanel", panelId: NEIGHBORHOOD_PANEL_ID }),
@@ -46,7 +47,7 @@ export const neighborhoodPanelPlugin: GraphPlugin = {
     if (!selected) {
       return {
         id: NEIGHBORHOOD_PANEL_ID,
-        title: "Neighborhood",
+        title: translate("Neighborhood"),
         placement: "bottom",
         order: 20,
         defaultOpen: false,
@@ -91,7 +92,7 @@ export const neighborhoodPanelPlugin: GraphPlugin = {
 
     return {
       id: NEIGHBORHOOD_PANEL_ID,
-      title: "Neighborhood",
+      title: translate("Neighborhood"),
       placement: "bottom",
       order: 20,
       defaultOpen: false,

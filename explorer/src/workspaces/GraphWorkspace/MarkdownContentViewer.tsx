@@ -27,6 +27,7 @@ import type { MarkdownApplyResult } from "./markdownResourceClient";
 import type { MarkdownResourceRef } from "./markdownEditorState";
 import { isSafeUrl } from "./markdownUrlSafety";
 import { useMarkdownEditor } from "./useMarkdownEditor";
+import { useI18n } from "../../i18n";
 
 export interface MarkdownContentViewerProps {
   content?: string | null;
@@ -65,6 +66,7 @@ export function MarkdownContentViewer({
   className,
   defaultMode = "preview",
 }: MarkdownContentViewerProps) {
+  const { tr } = useI18n();
   const [activeMode, setActiveMode] = useState<"preview" | "source">(defaultMode);
   const [copied, setCopied] = useState(false);
   const modeBeforeEditRef = useRef<"preview" | "source">(defaultMode);
@@ -249,7 +251,7 @@ export function MarkdownContentViewer({
   return (
     <div className={className} style={viewerContainerStyle}>
       <div style={viewerHeaderStyle}>
-        <div style={{ display: "flex", gap: 4 }} role="tablist" aria-label="Content view mode">
+        <div style={{ display: "flex", gap: 4 }} role="tablist" aria-label={tr("Content view mode")}>
           <button
             type="button"
             role="tab"
@@ -263,7 +265,7 @@ export function MarkdownContentViewer({
             style={{ ...tabBtnStyle, ...(activeMode === "preview" ? activeTabBtnStyle : {}) }}
           >
             <Eye size={12} style={{ marginRight: 5 }} aria-hidden="true" />
-            Preview
+            {tr("Preview")}
           </button>
           <button
             type="button"
@@ -278,22 +280,22 @@ export function MarkdownContentViewer({
             style={{ ...tabBtnStyle, ...(activeMode === "source" ? activeTabBtnStyle : {}) }}
           >
             <Code2 size={12} style={{ marginRight: 5 }} aria-hidden="true" />
-            Source
+            {tr("Source")}
           </button>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {hasContent && (
-            <button type="button" onClick={() => void handleCopy()} style={copyBtnStyle} title="Copy raw content">
+            <button type="button" onClick={() => void handleCopy()} style={copyBtnStyle} title={tr("Copy raw content")}>
               {copied ? (
                 <>
                   <Check size={12} color="#3fb950" style={{ marginRight: 4 }} aria-hidden="true" />
-                  <span style={{ color: "#3fb950", fontSize: 11 }}>Copied</span>
+                  <span style={{ color: "#3fb950", fontSize: 11 }}>{tr("Copied")}</span>
                 </>
               ) : (
                 <>
                   <Copy size={12} style={{ marginRight: 4 }} aria-hidden="true" />
-                  <span style={{ fontSize: 11 }}>Copy</span>
+                  <span style={{ fontSize: 11 }}>{tr("Copy")}</span>
                 </>
               )}
             </button>
@@ -301,20 +303,20 @@ export function MarkdownContentViewer({
           {resource && !editing && !loading ? (
             <button type="button" onClick={() => void handleEdit()} style={copyBtnStyle}>
               <Pencil size={12} style={{ marginRight: 4 }} aria-hidden="true" />
-              Edit
+              {tr("Edit")}
             </button>
           ) : null}
           {loading ? (
             <button type="button" disabled style={{ ...copyBtnStyle, opacity: 0.65 }}>
               <Loader2 size={12} className="animate-spin" style={{ marginRight: 4 }} aria-hidden="true" />
-              Loading…
+              {tr("Loading…")}
             </button>
           ) : null}
           {editing ? (
             <>
               <button type="button" onClick={handleCancel} disabled={saving} style={copyBtnStyle}>
                 <X size={12} style={{ marginRight: 4 }} aria-hidden="true" />
-                Cancel
+                {tr("Cancel")}
               </button>
               <button
                 type="button"
@@ -328,7 +330,7 @@ export function MarkdownContentViewer({
                 ) : (
                   <Check size={12} style={{ marginRight: 4 }} aria-hidden="true" />
                 )}
-                {saving ? "Applying…" : "Apply"}
+                {tr(saving ? "Applying…" : "Apply")}
               </button>
             </>
           ) : null}
@@ -341,7 +343,7 @@ export function MarkdownContentViewer({
           {error.kind === "conflict" ? (
             <button type="button" onClick={() => void editor.reloadLatest()} style={errorActionStyle}>
               <RefreshCw size={12} style={{ marginRight: 4 }} aria-hidden="true" />
-              Reload latest
+              {tr("Reload latest")}
             </button>
           ) : null}
         </div>
@@ -365,7 +367,7 @@ export function MarkdownContentViewer({
       >
         {activeMode === "source" && editing ? (
           <textarea
-            aria-label="Markdown source"
+            aria-label={tr("Markdown source")}
             aria-describedby={error ? "markdown-editor-error" : undefined}
             aria-invalid={error?.kind === "validation" || undefined}
             value={session?.draft ?? ""}
@@ -375,7 +377,7 @@ export function MarkdownContentViewer({
             style={editorStyle}
           />
         ) : !hasContent ? (
-          <div style={emptyTextStyle}>No content available for this node.</div>
+          <div style={emptyTextStyle}>{tr("No content available for this node.")}</div>
         ) : activeMode === "source" ? (
           <pre style={sourcePreStyle}>
             <code style={sourceCodeStyle}>{rawContent}</code>

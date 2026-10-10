@@ -11,19 +11,21 @@ export function ExploreWorkspaceTabs({
   agentMemoryAvailable,
   onSelect,
 }: ExploreWorkspaceTabsProps) {
+  const { tr } = useI18n();
   return (
     <>
       <button className="workspace-tab" data-active={activeView === 'graph'} onClick={() => onSelect('graph')}>
-        Semantica Explorer
+        {tr("Semantica Explorer")}
       </button>
       {agentMemoryAvailable ? (
         <button className="workspace-tab" data-active={activeView === 'memories'} onClick={() => onSelect('memories')}>
-          Memories
+          {tr("Memories")}
         </button>
       ) : null}
       <button className="workspace-tab" data-active={activeView === 'vocabulary'} onClick={() => onSelect('vocabulary')}>
-        Vocabulary Browser
+        {tr("Vocabulary Browser")}
       </button>
     </>
   );
 }
+import { useI18n } from "./i18n";

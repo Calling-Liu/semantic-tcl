@@ -8177,7 +8177,7 @@ wheels = [
 
 [[package]]
 name = "semantica"
-version = "0.7.0+tcl.2"
+version = "0.7.0+tcl.3"
 source = { editable = "." }
 dependencies = [
     { name = "chardet" },

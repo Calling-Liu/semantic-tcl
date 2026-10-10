@@ -7,7 +7,7 @@
 - 原项目：https://github.com/semantica-agi/semantica
 - 当前 Fork：https://github.com/Calling-Liu/semantic-tcl
 - 基线 Tag：`v0.7.0`
-- 当前版本：`0.7.0+tcl.2`
+- 当前版本：`0.7.0+tcl.3`
 - License：MIT，保留原项目 License 和历史提交
 
 ## 这个版本增加了什么
@@ -26,6 +26,7 @@
 - Semantica Context Graph 局部审计图。
 - 只读 MCP 查询服务。
 - Explorer 可视化。
+- Explorer 简体中文界面与中英文切换。
 
 命令入口：
 
@@ -100,7 +101,7 @@ scripts\build-local.ps1 -Proxy "http://127.0.0.1:7897"
 生成产物：
 
 ```text
-D:\project\semantic\dist\semantica-0.7.0+tcl.2-py3-none-any.whl
+D:\project\semantic\dist\semantica-0.7.0+tcl.3-py3-none-any.whl
 ```
 
 ## 3. 手工编译步骤
@@ -139,7 +140,7 @@ uv pip install --python .build-venv\Scripts\python.exe `
 uv venv --clear .venv --python 3.12
 
 uv pip install --python .venv\Scripts\python.exe `
-  "semantica[explorer,project-kb] @ file:///D:/project/semantic/dist/semantica-0.7.0+tcl.2-py3-none-any.whl"
+  "semantica[explorer,project-kb] @ file:///D:/project/semantic/dist/semantica-0.7.0+tcl.3-py3-none-any.whl"
 
 uv pip install --python .venv\Scripts\python.exe pytest
 ```
@@ -156,7 +157,7 @@ uv pip install --python .venv\Scripts\python.exe pytest
 版本应为：
 
 ```text
-0.7.0+tcl.2
+0.7.0+tcl.3
 ```
 
 ## 4. 为项目创建知识库
@@ -560,6 +561,39 @@ http://127.0.0.1:8765
 ```
 
 匿名模式只适合绑定 `127.0.0.1` 的本地开发，不要暴露到局域网或公网。
+
+### 9.1 Explorer 中文界面
+
+Explorer 默认使用简体中文，左侧底部的语言按钮可以切换到英文。选择会保存在浏览器 `localStorage` 中。
+
+第一批汉化范围：
+
+- 首页和系统状态。
+- 左侧主导航。
+- 一级 Workspace 标题和主要 Tab。
+- 知识探索搜索、视图模式、工具栏和加载状态。
+- 图谱效果、邻域、图例和时间上下文面板。
+- 节点 Inspector、内容预览、操作、路径追踪和来源信息。
+- 错误边界与重试提示。
+
+以下工程事实刻意不翻译：
+
+- Java/Kotlin 类名、方法名、包名和签名。
+- 文件路径、节点 ID、URI、属性原始键。
+- `calls`、`declared_in`、`implements`、`extends`、`protects` 等关系类型。
+- SPARQL、SHACL、OWL、SKOS、PROV-O 等标准名称。
+
+例如，界面按钮 `Edge Labels` 显示为“关系标签”，但关系线上的实际值仍显示 `calls` 或 `declared_in`。这样可以避免中文长文本在线上拥挤，也保留与源码、API 和导出数据的一致性。
+
+中文字体回退顺序包含：
+
+```text
+PingFang SC
+Microsoft YaHei
+Noto Sans CJK SC
+```
+
+代码、ID 和关系类型继续使用等宽字体。
 
 ## 10. TSD 和受保护源码
 

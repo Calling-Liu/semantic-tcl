@@ -82,7 +82,7 @@ test("real Explorer loading path hydrates and renders API edge labels", async (t
   });
   await installApiFixture(page);
   await page.goto(BASE_URL);
-  await page.getByRole("button", { name: /Open Semantica Explorer/ }).click();
+  await page.getByRole("button", { name: /打开知识探索|Open Semantica Explorer/ }).click();
 
   await page.locator("canvas").nth(0).waitFor({ state: "attached" });
   await page.waitForFunction(() => document.querySelectorAll("canvas").length >= 2);

@@ -4,6 +4,7 @@ import { AlertTriangle, RefreshCw } from "lucide-react";
 import { GRAPH_THEME, withAlpha } from "./graphTheme";
 import { GRAPH_LOAD_STAGE_SEQUENCE, createGraphLoadProgress, getGraphLoadStageLabel } from "./graphLoading";
 import type { GraphLoadProgress } from "./types";
+import { translate } from "../../i18n";
 
 const LOADING_OVERLAY_CSS = `
   .graph-stage-loader {
@@ -179,11 +180,11 @@ const LOADING_OVERLAY_CSS = `
 function formatLayoutSource(source: GraphLoadProgress["layoutSource"]) {
   switch (source) {
     case "provided":
-      return "Persisted layout";
+      return translate("Persisted layout");
     case "carried":
-      return "Preserved layout";
+      return translate("Preserved layout");
     case "runtime":
-      return "Runtime layout";
+      return translate("Runtime layout");
     default:
       return null;
   }
@@ -192,15 +193,15 @@ function formatLayoutSource(source: GraphLoadProgress["layoutSource"]) {
 function formatLayoutState(state: GraphLoadProgress["layoutState"]) {
   switch (state) {
     case "bootstrapping":
-      return "Bootstrapping";
+      return translate("Bootstrapping");
     case "running":
-      return "Settling";
+      return translate("Settling");
     case "interactive":
-      return "Interactive";
+      return translate("Interactive");
     case "stabilized":
-      return "Stable";
+      return translate("Stable");
     case "failed":
-      return "Fallback";
+      return translate("Fallback");
     default:
       return null;
   }
@@ -346,13 +347,13 @@ export function GraphLoadingOverlay({
               {activeProgress.title}
             </div>
             <div style={{ color: "#8fa8c6", fontSize: 13, lineHeight: 1.5 }}>
-              {activeProgress.message}
+              {translate(activeProgress.message)}
             </div>
           </div>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
             <div className="graph-stage-loader-beacon" aria-hidden="true" />
             <div style={{ color: "#d7e9fb", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              Stage {activeProgress.stageIndex ?? 1}/{activeProgress.stageCount ?? GRAPH_LOAD_STAGE_SEQUENCE.length}
+              {translate("Stage")} {activeProgress.stageIndex ?? 1}/{activeProgress.stageCount ?? GRAPH_LOAD_STAGE_SEQUENCE.length}
             </div>
           </div>
         </div>
@@ -372,13 +373,13 @@ export function GraphLoadingOverlay({
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline", marginBottom: 8 }}>
           <div style={{ color: "#dce9f6", fontSize: 12, fontWeight: 600 }}>
             {activeProgress.progressKind === "determinate" && activeProgress.total
-              ? `${(activeProgress.loaded ?? 0).toLocaleString()} / ${activeProgress.total.toLocaleString()} in current stage`
-              : "Working through this stage"}
+              ? `${(activeProgress.loaded ?? 0).toLocaleString()} / ${activeProgress.total.toLocaleString()} ${translate("in current stage")}`
+              : translate("Working through this stage")}
           </div>
           <div style={{ color: "#90a8c5", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
             {activeProgress.progressKind === "determinate" && determinateRatio !== null
               ? `${Math.round(determinateRatio * 100)}%`
-              : "Live"}
+              : translate("Live")}
           </div>
         </div>
 
